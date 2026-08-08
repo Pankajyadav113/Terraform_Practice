@@ -2,3 +2,17 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
+terraform.tfvars
+infracost-report.html
+tflint-report.json
+gitleaks-report.json
+infracost-report-pretty.json
+infracost-report.json
+tfsec-report.json
+tfsec-report
+
+tfplan
+tfplan.json
+crash.log
+crash.*.log
+*.tfvars

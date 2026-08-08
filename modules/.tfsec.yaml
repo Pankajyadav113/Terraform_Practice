@@ -1,0 +1,17 @@
+minimum_severity: LOW
+
+soft_fail: false
+
+include_passed: true
+
+exclude_downloaded_modules: true
+
+exclude_paths:
+  - .terraform
+  - .git
+
+format: json
+
+no_color: true
+
+run_statistics: true
