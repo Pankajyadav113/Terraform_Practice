@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Azure Terraform Infrastructure</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b1120;
+      color: #e5e7eb;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    /* Navbar */
+    nav {
+      padding: 22px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .github {
+      text-decoration: none;
+      color: white;
+      border: 1px solid #334155;
+      padding: 9px 16px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .github:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 90px 20px 70px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #132337;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      color: #38bdf8;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: auto;
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .buttons {
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 8px;
+      margin: 5px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .primary {
+      background: #38bdf8;
+      color: #07111f;
+    }
+
+    .primary:hover {
+      transform: translateY(-2px);
+      background: #7dd3fc;
+    }
+
+    .secondary {
+      border: 1px solid #334155;
+      color: white;
+    }
+
+    .secondary:hover {
+      border-color: #38bdf8;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 70px;
+    }
+
+    .stat {
+      background: #111827;
+      border: 1px solid #1e293b;
+      padding: 25px;
+      text-align: center;
+      border-radius: 12px;
+    }
+
+    .stat h2 {
+      color: #38bdf8;
+      font-size: 30px;
+      margin-bottom: 7px;
+    }
+
+    .stat p {
+      color: #94a3b8;
+    }
+
+    /* Sections */
+    section {
+      padding: 55px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: #94a3b8;
+    }
+
+    /* Architecture */
+    .architecture {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 15px;
+      padding: 35px;
+      text-align: center;
+    }
+
+    .layer {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    .box {
+      background: #111827;
+      border: 1px solid #334155;
+      padding: 16px 22px;
+      border-radius: 10px;
+      min-width: 150px;
+      transition: 0.3s;
+    }
+
+    .box:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+    }
+
+    .arrow {
+      color: #38bdf8;
+      font-size: 24px;
+    }
+
+    /* Modules */
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .module {
+      background: #111827;
+      border: 1px solid #1e293b;
+      padding: 22px;
+      border-radius: 12px;
+      transition: 0.3s;
+    }
+
+    .module:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+    }
+
+    .module h3 {
+      color: #f8fafc;
+      margin-bottom: 8px;
+    }
+
+    .module p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* Tools */
+    .tools {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tool {
+      background: #111827;
+      border: 1px solid #334155;
+      padding: 12px 20px;
+      border-radius: 30px;
+      color: #cbd5e1;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 50px;
+      padding: 30px 0;
+      text-align: center;
+      border-top: 1px solid #1e293b;
+      color: #64748b;
+    }
+
+    /* Mobile */
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .modules {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 550px) {
+      .stats,
+      .modules {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 60px;
+      }
+
+      .architecture {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="container">
+      <div class="logo">☁ Azure + Terraform</div>
+
+      <a
+        class="github"
+        href="https://github.com/Pankajyadav113/Terraform_Practice"
+        target="_blank"
+      >
+        GitHub ↗
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+
+      <div class="badge">
+        Infrastructure as Code • DevSecOps
+      </div>
+
+      <h1>
+        Azure Infrastructure<br />
+        <span>Automated with Terraform</span>
+      </h1>
+
+      <p>
+        A reusable and modular Terraform infrastructure project for
+        deploying Azure networking, virtual machines, security,
+        load balancing, Bastion and Key Vault resources.
+      </p>
+
+      <div class="buttons">
+        <a
+          href="https://github.com/Pankajyadav113/Terraform_Practice"
+          target="_blank"
+          class="btn primary"
+        >
+          View Terraform Code
+        </a>
+
+        <a href="#architecture" class="btn secondary">
+          View Architecture
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="container">
+    <div class="stats">
+
+      <div class="stat">
+        <h2>20+</h2>
+        <p>Terraform Modules</p>
+      </div>
+
+      <div class="stat">
+        <h2>2</h2>
+        <p>Linux VMs</p>
+      </div>
+
+      <div class="stat">
+        <h2>1</h2>
+        <p>Azure VNet</p>
+      </div>
+
+      <div class="stat">
+        <h2>100%</h2>
+        <p>Infrastructure as Code</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <section id="architecture">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Infrastructure Architecture</h2>
+        <p>High-level view of the Azure infrastructure</p>
+      </div>
+
+      <div class="architecture">
+
+        <div class="layer">
+          <div class="box">🌐 Internet</div>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="layer">
+          <div class="box">🛡️ Azure Bastion</div>
+          <div class="box">⚖️ Load Balancer</div>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="layer">
+          <div class="box">☁️ Azure VNet<br />10.0.0.0/16</div>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="layer">
+          <div class="box">
+            Frontend Subnet<br />
+            10.0.1.0/24
+          </div>
+
+          <div class="box">
+            Backend Subnet<br />
+            10.0.2.0/24
+          </div>
+
+          <div class="box">
+            Private Endpoint<br />
+            10.0.4.0/24
+          </div>
+        </div>
+
+        <div class="arrow">↓</div>
+
+        <div class="layer">
+          <div class="box">💻 Linux VM 01</div>
+          <div class="box">💻 Linux VM 02</div>
+          <div class="box">🔐 Key Vault</div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modules -->
+  <section>
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Reusable Terraform Modules</h2>
+        <p>Infrastructure components managed using reusable modules</p>
+      </div>
+
+      <div class="modules">
+
+        <div class="module">
+          <h3>🌐 Virtual Network</h3>
+          <p>Azure VNet and subnet infrastructure.</p>
+        </div>
+
+        <div class="module">
+          <h3>💻 Linux VM</h3>
+          <p>Reusable Ubuntu Linux virtual machines.</p>
+        </div>
+
+        <div class="module">
+          <h3>🔌 Network Interface</h3>
+          <p>NIC configuration and subnet connectivity.</p>
+        </div>
+
+        <div class="module">
+          <h3>🛡️ Network Security Group</h3>
+          <p>Network security rules and access control.</p>
+        </div>
+
+        <div class="module">
+          <h3>⚖️ Load Balancer</h3>
+          <p>Backend pool, probes and load balancing rules.</p>
+        </div>
+
+        <div class="module">
+          <h3>🔐 Key Vault</h3>
+          <p>Secure storage for infrastructure secrets.</p>
+        </div>
+
+        <div class="module">
+          <h3>🚪 Azure Bastion</h3>
+          <p>Secure VM access without direct SSH exposure.</p>
+        </div>
+
+        <div class="module">
+          <h3>🔒 Private Endpoint</h3>
+          <p>Private connectivity for Azure services.</p>
+        </div>
+
+        <div class="module">
+          <h3>📡 Public IP</h3>
+          <p>Public IP resources for required services.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DevSecOps -->
+  <section>
+    <div class="container">
+
+      <div class="section-title">
+        <h2>DevSecOps Tooling</h2>
+        <p>Infrastructure validation and security scanning</p>
+      </div>
+
+      <div class="tools">
+        <div class="tool">Terraform</div>
+        <div class="tool">Checkov</div>
+        <div class="tool">tfsec</div>
+        <div class="tool">TFLint</div>
+        <div class="tool">Gitleaks</div>
+        <div class="tool">InfraCost</div>
+        <div class="tool">GitHub</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>
+        Built with Terraform • Azure • DevSecOps
+      </p>
+
+      <p style="margin-top: 8px;">
+        © 2026 Pankaj Yadav
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
