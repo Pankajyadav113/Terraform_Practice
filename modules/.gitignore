@@ -2,7 +2,7 @@
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl
-terraform.tfvars
+# terraform.tfvars
 infracost-report.html
 tflint-report.json
 gitleaks-report.json
@@ -15,4 +15,4 @@ tfplan
 tfplan.json
 crash.log
 crash.*.log
-*.tfvars
+# *.tfvars
