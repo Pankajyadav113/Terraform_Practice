@@ -1,19 +1,151 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: pankaj-agent
+  demands:
+  - agent.name -equals LAPTOP-0ALNSCP9
+
+variables:
+  terraformWorkingDirectory: '$(Build.SourcesDirectory)\modules\environments\preprod'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+# -------------------------------------------------
+# 1. Checkout Source Code
+# -------------------------------------------------
+- checkout: self
+  displayName: 'Checkout Terraform Code'
+
+
+# -------------------------------------------------
+# 2. Check / Install Terraform
+# -------------------------------------------------
+- task: PowerShell@2
+  displayName: 'Check and Install Terraform'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = "Stop"
+
+      Write-Host "===== Checking Terraform ====="
+
+      $terraform = Get-Command terraform -ErrorAction SilentlyContinue
+
+      if ($terraform) {
+          terraform version
+          Write-Host "Terraform is already installed."
+      }
+      else {
+          Write-Host "Terraform not found. Installing..."
+
+          $terraformVersion = "1.13.1"
+          $url = "https://releases.hashicorp.com/terraform/$terraformVersion/terraform_${terraformVersion}_windows_amd64.zip"
+
+          $zipPath = "$env:TEMP\terraform.zip"
+          $installPath = "C:\terraform"
+
+          Invoke-WebRequest -Uri $url -OutFile $zipPath
+
+          if (!(Test-Path $installPath)) {
+              New-Item -ItemType Directory -Path $installPath | Out-Null
+          }
+
+          Expand-Archive -Path $zipPath -DestinationPath $installPath -Force
+
+          $env:Path += ";$installPath"
+
+          [Environment]::SetEnvironmentVariable(
+              "Path",
+              [Environment]::GetEnvironmentVariable("Path", "Machine") + ";$installPath",
+              "Machine"
+          )
+
+          Write-Host "Terraform installed successfully."
+          terraform version
+      }
+
+
+# -------------------------------------------------
+# 3. Azure Authentication Check
+# -------------------------------------------------
+- task: PowerShell@2
+  displayName: 'Azure Authentication Check'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = "Stop"
+
+      Write-Host "===== Azure Account ====="
+
+      az account show
+
+      Write-Host ""
+      Write-Host "===== Azure Management Token Check ====="
+
+      az account get-access-token --resource https://management.azure.com/ | Out-Null
+
+      if ($LASTEXITCODE -ne 0) {
+          throw "Azure authentication failed."
+      }
+
+      Write-Host "Azure authentication successful."
+
+
+# -------------------------------------------------
+# 4. Terraform Init
+# -------------------------------------------------
+- task: PowerShell@2
+  displayName: 'Terraform Init'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = "Stop"
+
+      Set-Location "$(terraformWorkingDirectory)"
+
+      Write-Host "===== Current Directory ====="
+      Get-Location
+
+      Write-Host ""
+      Write-Host "===== Terraform Init ====="
+
+      $env:ARM_USE_CLI = "true"
+
+      terraform init
+
+
+# -------------------------------------------------
+# 5. Terraform Validate
+# -------------------------------------------------
+- task: PowerShell@2
+  displayName: 'Terraform Validate'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = "Stop"
+
+      Set-Location "$(terraformWorkingDirectory)"
+
+      Write-Host "===== Terraform Validate ====="
+
+      terraform validate
+
+
+# -------------------------------------------------
+# 6. Terraform Plan
+# -------------------------------------------------
+- task: PowerShell@2
+  displayName: 'Terraform Plan'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = "Stop"
+
+      Set-Location "$(terraformWorkingDirectory)"
+
+      Write-Host "===== Terraform Plan ====="
+
+      $env:ARM_USE_CLI = "true"
+
+      terraform plan
